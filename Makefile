@@ -1,14 +1,17 @@
-GOPATH=./../../../
+GOPATH=$(shell pwd)/../../../..
+export GOPATH
 
-.PHONY: clean
-clean:
-    rm $(GOPATH)/bin/* -Rf
+.PHONY : clean
 
-build:
-    go install
+clean : ;
+	rm $(GOPATH)/bin/* -Rf
 
-dist-docker:
-    docker rmi alivinco/blackflowhub
+build :
+	go install
 
-docker-publish:
-    docker push alivinco/blackfly
+dist-docker : build
+	docker rmi alivinco/blackflowhub
+	docker build -t alivinco/blackflowhub .
+
+docker-publish : dist-docker
+	docker push alivinco/blackfly
