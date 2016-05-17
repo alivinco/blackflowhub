@@ -1,10 +1,12 @@
 language: go
-
 go:
   - 1.6
   - tip
 
 sudo: required
+branches:
+  only:
+    - master
 
 services:
   - docker
