@@ -1,0 +1,15 @@
+language: go
+
+go:
+  - 1.6
+  - tip
+
+sudo: required
+
+services:
+  - docker
+
+script: make dist-docker
+
+before_deploy: docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+deploy : docker push alivinco/blackfly
