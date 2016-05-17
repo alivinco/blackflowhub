@@ -11,8 +11,9 @@ services:
   - docker
 
 script:
-  - make dist-docker
+  - go install
 
 after_success:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - docker push alivinco/blackfly
+  - docker build -t alivinco/blackflowhub .
+  - docker push alivinco/blackflowhub

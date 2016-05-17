@@ -14,4 +14,4 @@ dist-docker : build
 	docker build -t alivinco/blackflowhub .
 
 docker-publish : dist-docker
-	docker push alivinco/blackfly
+	docker push alivinco/blackflowhub
