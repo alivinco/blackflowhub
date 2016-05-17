@@ -1,4 +1,5 @@
-
+## Blackflow Hub 
+The service is a simple application store or application hub for Blackflow IOT project .
 ### Service configuration 
 
 The service can be configured either by setting up environment variables or by specify parameters as command line 
