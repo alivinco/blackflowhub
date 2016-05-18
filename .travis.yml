@@ -10,10 +10,18 @@ sudo: required
 services:
   - docker
 
+before_script:
+  - export GOOS=linux
+  - export GOARCH=amd64
+  - mkdir -p bin
+
 script:
-  - make dist-docker
+  - go build -v -o bin/blackflowhub
+  - export RELEASE_BIN_FILE=$(ls bin/*)
+  - echo "Buidl file $RELEASE_BIN_FILE to be packaged into container"
 
 after_success:
+  - docker build -t alivinco/blackflowhub .
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker build -t alivinco/blackflowhub .
   - docker push alivinco/blackflowhub
