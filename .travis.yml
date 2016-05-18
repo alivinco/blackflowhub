@@ -13,6 +13,7 @@ services:
 before_script:
   - export GOOS=linux
   - export GOARCH=amd64
+  - export CGO_ENABLED=0
   - mkdir -p bin
 
 script:
