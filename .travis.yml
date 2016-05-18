@@ -18,7 +18,7 @@ before_script:
 script:
   - go build -v -o bin/blackflowhub
   - export RELEASE_BIN_FILE=$(ls bin/*)
-  - echo "Buidl file $RELEASE_BIN_FILE to be packaged into container"
+  - echo "Deliverable $RELEASE_BIN_FILE is going to be packaged into container"
 
 after_success:
   - docker build -t alivinco/blackflowhub .
