@@ -154,7 +154,7 @@ func(ac *AppRestController) PostFile(c *gin.Context) {
 		   c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	   }
    }else {
-	   c.AbortWithError(401, errors.New("You are authorized to access the app"))
+	   c.AbortWithError(401, errors.New("You are not authorized to access the app"))
    }
 
 }
@@ -185,7 +185,7 @@ func(ac *AppRestController) AuthorizeAppUpdate(c *gin.Context,ID string)(bool){
 	auth := utils.GetAuthRequest(c)
 	// Get app metadata
 	am , err := ac.AppStore.AppMetaStore.GetById(ID)
-	if err != nil{
+	if err == nil{
 		if am.Developer == auth.Username {
 			return true
 		}else
@@ -193,7 +193,8 @@ func(ac *AppRestController) AuthorizeAppUpdate(c *gin.Context,ID string)(bool){
 			c.AbortWithError(401, errors.New("You are authorized to access the app"))
 		}
 	}else{
-		c.JSON(http.StatusNotFound,gin.H{"status":"app not found"})
+		fmt.Println("App not found")
+		c.JSON(http.StatusInternalServerError,gin.H{"status":"app not found"})
 	}
 	return false
 }

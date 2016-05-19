@@ -16,7 +16,7 @@ docker-clean:
 
 dist-docker :
 	mkdir -p bin
-	env GOOS=linux GOARCH=amd64 go build -v -o bin/blackflowhub
+	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -v -o bin/blackflowhub
 	echo $(shell ls -a bin/)
 	docker build -t alivinco/blackflowhub .
 
