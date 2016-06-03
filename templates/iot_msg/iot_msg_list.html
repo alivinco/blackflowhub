@@ -1,0 +1,91 @@
+{{ template "header.html" .}}
+<h3>Message classes</h3>
+<button type="button" onclick="window.location.href='/ui/msg_class/_/_'" class="btn btn-default">Add new msg class</button>
+<div class="container-fluid">
+<br>
+<div class="row">
+ <div >
+    <form class="form-inline" role="form" method="get" action="" enctype="text/plain" >
+      <div class="form-group">
+
+        <select name="msg_type_filter" class="form-control">
+            <option value="">Message type</option>
+            <option value="">------------</option>
+            <option value="command">command</option>
+            <option value="event">event</option>
+        </select>
+        <select name ="msg_class_filter" class="form-control">
+            <option value="">Message class</option>
+            <option value="">-------------</option>
+
+        </select>
+         <select name="context_filter" class="form-control">
+            <option value="">Author</option>
+            <option value="">------------</option>
+
+        </select>
+        <select name="tags_filter" class="form-control">
+            <option value="">Tags</option>
+            <option value="">------------</option>
+
+        </select>
+      </div>
+       <button type="submit" class="btn btn-default">Filter</button>
+    </form>
+ </div>
+</div>
+
+<div class="table-responsive">
+ <table id="addr_map_table" class="table table-striped">
+     <thead>
+                    <tr>
+                      <th data-sort="string">Payload Type (↑↓)</th>
+                      <th data-sort="string">Type (↑↓)</th>
+                      <th data-sort="string" >Message class (↑↓)</th>
+                      <th>Sub Class </th>
+                      <th>Version</th>
+                      <th>Created</th>
+                      <th>Updated</th>
+                      <th >tags</th>
+                      <th data-sort="string" >Author (↑↓)</th>
+                      <th></th>
+                    </tr>
+     </thead>
+     <tbody>
+     {{ range . }}
+      <tr>
+       <td> {{ .PayloadType }} </td>
+       <td> {{ .Type }} </td>
+       <td> {{ .Class }}  </td>
+       <td> {{ .SubClass }} </td>
+       <td> {{ .Version }} </td>
+       <td> {{ .Created }} </td>
+       <td> {{ .Updated }} </td>
+       <td style="max-width: 70px"> <small> {{ .Tags }} </small></td>
+       <td> {{ .Author }} </td>
+       <td><a href="/bfhub/ui/iotmsg/msg/{{ .ID.Hex }}">Open</a></td>
+      </tr>
+      {{ end }}
+     </tbody>
+
+ </table>
+</div>
+</div>
+
+<div class="modal fade" id="free_text_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Extracted data</h4>
+      </div>
+      <div id = "free_text_placeholder" class="modal-body">
+        <pre>...</pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{{ template "footer.html" .}}

@@ -6,8 +6,6 @@ import (
 	"github.com/alivinco/blackflowhub/store"
 	"github.com/alivinco/blackflowhub/store/db"
 	"github.com/alivinco/blackflowhub/gincontrib/jwt"
-//	"github.com/auth0/go-jwt-middleware"
-//	"github.com/dgrijalva/jwt-go"
 	"fmt"
 	"encoding/base64"
 	"github.com/itsjamie/gin-cors"
@@ -18,12 +16,19 @@ import (
 var mongoDb db.MongodbAppMetaStore
 var fileStore db.FileStore
 var appStore store.AppStore
+var iotMsgStore *store.IotMsgStore
+var appRestController controller.AppRestController
+var iotMsgRestController controller.IotMsgRestController
 
 func initAppStore(dbConn string , dbName string , fsLocation string) (error){
 	err := mongoDb.Connect(dbConn,dbName)
 	if err==nil {
 		fileStore = db.FileStore{fsLocation}
 		appStore = store.AppStore{&mongoDb, &fileStore}
+		iotMsgStore = store.NewIotMsgStore(mongoDb.GetDbConnection())
+
+		appRestController = controller.AppRestController{&appStore}
+		iotMsgRestController = controller.IotMsgRestController{iotMsgStore}
 		return nil
 	}else {
 		return err
@@ -35,10 +40,10 @@ func stopAppStore(){
 	mongoDb.Close()
 }
 
-
-
 func RunHttpServer(bindAddress string,jwtSecret string){
 	r := gin.Default()
+	r.Static("/bfhub/static","./static")
+	r.LoadHTMLGlob("templates/**/*")
 	r.Use(cors.Middleware(cors.Config{
 				Origins:        "*",
 				Methods:        "GET, PUT, POST, DELETE",
@@ -51,18 +56,29 @@ func RunHttpServer(bindAddress string,jwtSecret string){
 	decoded_secret, _ := base64.URLEncoding.DecodeString(jwtSecret)
 	r.Use(jwt.Auth(string(decoded_secret)))
 
-	contr := controller.AppRestController{&appStore}
-	root := r.Group("/bfhub/api")
+	root := r.Group("/bfhub/api/apps")
 	{
 		// public and logged in users
-		root.GET("/apps",contr.GetApps)
-		root.GET("/apps/id/:app_id",contr.GetAppById)
-		root.GET("/apps/by_full_name",contr.GetAppByFullName)
-		root.GET("/apps/file/:app_id",contr.GetFile)
-		root.POST("/apps",contr.PostApp)
-		root.DELETE("/apps/:app_id",contr.DeleteApps)
+		root.GET("",appRestController.GetApps)
+		root.GET("/id/:app_id",appRestController.GetAppById)
+		root.GET("/by_full_name",appRestController.GetAppByFullName)
+		root.GET("/file/:app_id",appRestController.GetFile)
+		root.POST("",appRestController.PostApp)
+		root.DELETE("/:app_id",appRestController.DeleteApps)
 		//curl -i -v -F "ID=test_file" -F "file=@package.json" http://localhost:8080/bfhub/api/file
-		root.POST("/apps/file",contr.PostFile)
+		root.POST("/file",appRestController.PostFile)
+	}
+	root2 := r.Group("/bfhub/api/iotmsg")
+	{
+		root2.GET("",iotMsgRestController.GetIotMsgs)
+		root2.GET("/template",iotMsgRestController.GetIotMsgTemplate)
+		root2.POST("",iotMsgRestController.PostIotMsg)
+	}
+	rootIotMsgUi := r.Group("/bfhub/ui/iotmsg")
+	{
+		rootIotMsgUi.GET("/list",iotMsgRestController.GetIotMsgsUi)
+		rootIotMsgUi.GET("/msg/:msg_id",iotMsgRestController.GetIotMsgUi)
+
 	}
 	r.Run(bindAddress)
 }

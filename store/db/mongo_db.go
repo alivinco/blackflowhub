@@ -23,6 +23,10 @@ func (mg *MongodbAppMetaStore) Connect(serverName string , dbName string) error 
 	}
 	return err
 }
+
+func (mg *MongodbAppMetaStore) GetDbConnection()(*mgo.Session,*mgo.Database){
+	return mg.session,mg.db
+}
 func (mg *MongodbAppMetaStore) Close (){
 	mg.session.Close()
 }
